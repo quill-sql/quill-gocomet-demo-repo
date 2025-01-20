@@ -7,8 +7,12 @@ require 'dotenv'
 require 'quill-sql'
 
 Dotenv.load(File.expand_path('../.env', __dir__))
-
-puts "ENV['ENV']: #{ENV['ENV']}"
+#print out the environment variables
+ENV.each do |k, v|
+  if k == 'PRIVATE_KEY' || k == 'DB_URL'
+    puts "#{k}: #{v}"
+  end
+end
 
 set :port, 3001
 set :bind, '0.0.0.0'
