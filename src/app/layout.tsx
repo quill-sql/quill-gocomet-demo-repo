@@ -9,17 +9,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <QuillProvider
-        publicKey={process.env.NEXT_PUBLIC_QUILL_PUBLIC_KEY!}
-        queryEndpoint="http://localhost:3001/quill"
-        queryHeaders={{}}
+      <body
+        className={`antialiased`}
       >
-        <body
-          className={`antialiased`}
+        <QuillProvider
+          publicKey={process.env.NEXT_PUBLIC_QUILL_PUBLIC_KEY!}
+          queryEndpoint="http://localhost:3001/quill"
+          queryHeaders={{}}
         >
           {children}
-        </body>
-      </QuillProvider>
+        </QuillProvider>
+      </body>
     </html>
   );
 }
