@@ -39,16 +39,16 @@ post '/quill' do
   content_type :json
   headers 'Access-Control-Allow-Origin' => '*'
   metadata = JSON.parse(request.body.read)['metadata']
-  quill.query(
-    tenants: [
+  result = quill.query(
+  tenants: [
     {
-      tenant_field: 'client_group_id',
-      tenant_ids: ['d08218d5-5ce3-4e2d-af6a-05e130e62730']
+      'tenant_field' => 'client_group_id',
+      'tenant_ids' => ['d08218d5-5ce3-4e2d-af6a-05e130e62730']
     }
   ],
-    metadata: metadata
-  )
-  result.to_json
+  metadata: metadata
+)
+result.to_json
 end
 
 options '/quill' do
