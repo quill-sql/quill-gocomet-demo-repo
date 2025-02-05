@@ -5,6 +5,8 @@ gem 'sinatra-cors'
 gem 'json'
 gem 'dotenv'
 gem 'quill-sql'
+gem 'csv'
+gem 'bigdecimal'
 
 gem "rackup", "~> 2.2"
 gem "puma", "~> 6.5"

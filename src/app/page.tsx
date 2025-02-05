@@ -1,32 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import styles from './page.module.css';
-import { Dashboard } from '@quillsql/react';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-import { Card, Select, DatePicker, Segmented } from 'antd';
+"use client";
+import styles from "./page.module.css";
+import { Dashboard } from "@quillsql/react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import { Card, Select, DatePicker, Segmented } from "antd";
 const { RangePicker } = DatePicker;
-import { useRouter } from 'next/navigation';
-import { ChangeEvent, useState } from 'react';
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useState } from "react";
 
 const DATE_BUCKETING_OPTIONS = [
-  { value: 'month', label: 'Month' },
-  { value: 'week', label: 'Week' },
-  { value: 'day', label: 'Day' },
+  { value: "month", label: "Month" },
+  { value: "week", label: "Week" },
+  { value: "day", label: "Day" },
 ];
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // Set timezone to GMT
-dayjs.tz.setDefault('UTC');
+dayjs.tz.setDefault("UTC");
 
 export default function Home() {
   const router = useRouter();
   const [dateBucket, setDateBucket] = useState<
-    'month' | 'day' | 'week' | 'year'
-  >('month');
+    "month" | "day" | "week" | "year"
+  >("month");
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -34,8 +34,8 @@ export default function Home() {
           FilterContainerComponent={({ children }: any) => (
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'row',
+                display: "flex",
+                flexDirection: "row",
                 marginBottom: 12,
                 gap: 12,
               }}
@@ -46,14 +46,14 @@ export default function Home() {
                   value={dateBucket}
                   options={DATE_BUCKETING_OPTIONS}
                   onChange={(value) => {
-                    setDateBucket(value as 'month' | 'day' | 'week' | 'year');
+                    setDateBucket(value as "month" | "day" | "week" | "year");
                   }}
                 />
               </div>
               {children}
             </div>
           )}
-          name="test"
+          name="trackings"
           dateBucket={dateBucket}
           ChartComponent={({ report, children }: any) => (
             <Card
@@ -61,7 +61,7 @@ export default function Home() {
               onClick={() => {
                 router.push(`/reports/${report.id}`);
               }}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: "pointer" }}
             >
               {children}
             </Card>
@@ -75,13 +75,23 @@ export default function Home() {
   );
 }
 
-const SelectComponent = ({ value, onChange, options }: {
+const SelectComponent = ({
+  value,
+  onChange,
+  options,
+}: {
   value: string | null | undefined;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   options: { value: string; label: string }[];
 }) => {
   return (
-    <Select value={value} onChange={(e: string) => { onChange({ target: { value: e }} as any)} } style={{ width: 200 }}>
+    <Select
+      value={value}
+      onChange={(e: string) => {
+        onChange({ target: { value: e } } as any);
+      }}
+      style={{ width: 200 }}
+    >
       {options.map((option) => (
         <Select.Option key={option.value} value={option.value}>
           {option.label}
@@ -89,22 +99,27 @@ const SelectComponent = ({ value, onChange, options }: {
       ))}
     </Select>
   );
-}
+};
 
-const MultiSelectComponent = ({ value, onChange, options, label }: {
+const MultiSelectComponent = ({
+  value,
+  onChange,
+  options,
+  label,
+}: {
   value: (string | null)[] | null | undefined;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   options: { value: string; label: string }[];
   label?: string;
 }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {label && <div style={{ fontSize: 12 }}>{label}</div>}
       <Select
         mode="multiple"
         value={value?.filter((v) => v !== null)}
         onChange={(e: string[]) => {
-          onChange({ target: { value: e }} as any);
+          onChange({ target: { value: e } } as any);
         }}
         style={{ width: 200 }}
       >
@@ -116,7 +131,7 @@ const MultiSelectComponent = ({ value, onChange, options, label }: {
       </Select>
     </div>
   );
-}
+};
 
 const DateRangePickerComponent = ({
   dateRange,
@@ -130,9 +145,9 @@ const DateRangePickerComponent = ({
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'end',
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "end",
         gap: 10,
       }}
     >
@@ -140,17 +155,17 @@ const DateRangePickerComponent = ({
         <div style={{ fontSize: 12, marginBottom: 4 }}>{label}</div>
         <RangePicker
           value={[
-            dayjs(dateRange.startDate).tz('UTC'),
-            dayjs(dateRange.endDate).tz('UTC'),
+            dayjs(dateRange.startDate).tz("UTC"),
+            dayjs(dateRange.endDate).tz("UTC"),
           ]}
           onChange={(dateRange) => {
             if (!dateRange?.[1]) return;
             onChangeDateRange({
               startDate: new Date(
-                Date.parse(dateRange[0]?.tz('UTC').toISOString() ?? ''),
+                Date.parse(dateRange[0]?.tz("UTC").toISOString() ?? "")
               ),
               endDate: new Date(
-                Date.parse(dateRange[1]?.tz('UTC').toISOString() ?? ''),
+                Date.parse(dateRange[1]?.tz("UTC").toISOString() ?? "")
               ),
             });
           }}
