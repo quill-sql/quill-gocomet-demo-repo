@@ -5,16 +5,11 @@ import { Dashboard } from "@quillsql/react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { Card, Select, DatePicker, Segmented } from "antd";
+import { Card, Select, DatePicker, Table, Spin } from "antd";
 const { RangePicker } = DatePicker;
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
-
-const DATE_BUCKETING_OPTIONS = [
-  { value: "month", label: "Month" },
-  { value: "week", label: "Week" },
-  { value: "day", label: "Day" },
-];
+import { ChangeEvent } from "react";
+import { formatRows } from "./reports/[slug]/utils/format";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -24,37 +19,12 @@ dayjs.tz.setDefault("UTC");
 
 export default function Home() {
   const router = useRouter();
-  const [dateBucket, setDateBucket] = useState<
-    "month" | "day" | "week" | "year"
-  >("month");
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <Dashboard
-          FilterContainerComponent={({ children }: any) => (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                marginBottom: 12,
-                gap: 12,
-              }}
-            >
-              <div>
-                <div style={{ fontSize: 12, marginBottom: 4 }}>Bucket by</div>
-                <Segmented
-                  value={dateBucket}
-                  options={DATE_BUCKETING_OPTIONS}
-                  onChange={(value) => {
-                    setDateBucket(value as "month" | "day" | "week" | "year");
-                  }}
-                />
-              </div>
-              {children}
-            </div>
-          )}
           name="trackings"
-          dateBucket={dateBucket}
+          onClickReport={(report) => router.push(`/reports/${report.id}`)}
           ChartComponent={({ report, children }: any) => (
             <Card
               title={report.name}
@@ -66,9 +36,48 @@ export default function Home() {
               {children}
             </Card>
           )}
+          MetricComponent={({ report, isLoading, children }: any) => (
+            <Card
+              title={report.name}
+              onClick={() => {
+                router.push(`/reports/${report.id}`);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {isLoading ? <Spin /> : <h1>{children}</h1>}
+            </Card>
+          )}
           SelectComponent={SelectComponent}
           MultiSelectComponent={MultiSelectComponent}
           DateRangePickerComponent={DateRangePickerComponent}
+          TableComponent={({ report, isLoading }) => (
+            <Card
+              title={report.name}
+              onClick={() => {
+                router.push(`/reports/${report.id}`);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              <Table
+                size="small"
+                loading={isLoading}
+                locale={{ emptyText: "" }}
+                bordered
+                scroll={{ x: "max-content" }}
+                columns={
+                  report?.columns?.map((column) => ({
+                    title: column.label,
+                    dataIndex: column.field,
+                    key: column.field,
+                  })) || []
+                }
+                dataSource={formatRows(
+                  report?.rows || [],
+                  report?.columns || []
+                )}
+              />
+            </Card>
+          )}
         />
       </main>
     </div>
