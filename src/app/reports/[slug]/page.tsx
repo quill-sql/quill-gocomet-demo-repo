@@ -4,9 +4,15 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { Chart, useExport, useQuill } from "@quillsql/react";
+import {
+  Chart,
+  FilterType,
+  StringOperator,
+  useExport,
+  useQuill,
+} from "@quillsql/react";
 import { useParams } from "next/navigation";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { Table, Select, DatePicker, Skeleton, Button } from "antd";
 import { formatRows } from "./utils/format";
 const { RangePicker } = DatePicker;
@@ -21,6 +27,34 @@ export default function Page() {
   const params = useParams();
   const id = params?.slug as string;
   const { data, loading } = useQuill(id || "");
+  const [filters, setFilters] = useState<
+    {
+      table: string;
+      field: string;
+      operator: string;
+      value: string;
+      filterType: string;
+    }[]
+  >([]);
+
+  const handleDrillDown = (payload: any) => {
+    if (!data) return;
+    if (filters.length) {
+      setFilters([]);
+      return;
+    }
+    const xAxisField = data.xAxisField;
+    const value = payload[xAxisField];
+    setFilters([
+      {
+        table: "source",
+        field: data.xAxisField,
+        operator: StringOperator.Equals,
+        value: value,
+        filterType: FilterType.StringFilter,
+      },
+    ]);
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -41,6 +75,8 @@ export default function Page() {
               display: "flex",
               height: 400,
             }}
+            onClickChartElement={handleDrillDown}
+            filters={filters}
             DateRangePickerComponent={DateRangePickerComponent}
             MultiSelectComponent={MultiSelectComponent}
           />

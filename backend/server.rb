@@ -51,6 +51,38 @@ post '/quill' do
 result.to_json
 end
 
+get '/quill-report/:report_id' do 
+  content_type :json
+  headers 'Access-Control-Allow-Origin' => '*'
+  report_id = params['report_id']
+  result = quill.query(
+  tenants: [
+    {
+      'tenant_field' => 'client_group_id',
+      'tenant_ids' => ['d08218d5-5ce3-4e2d-af6a-05e130e62730']
+    }
+  ],
+  metadata: {
+    "reportId": report_id,
+    "clientId": ENV['NEXT_PUBLIC_QUILL_PUBLIC_KEY'],
+    "task": "report",
+    "filters": []
+  }
+)
+
+data = result[:data]
+queries = result[:queries]
+rows = queries[:queryResults][0][:rows]
+
+response_object = {
+  rows: rows,
+  name:    data[:name],
+  columns: data[:columns]
+}
+
+response_object.to_json
+end
+
 options '/quill' do
   response.headers["Allow"] = "GET,POST,OPTIONS"
   response.headers["Access-Control-Allow-Origin"] = "*"
