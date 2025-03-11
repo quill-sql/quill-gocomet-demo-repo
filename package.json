@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@quillsql/node": "0.6.13",
-    "@quillsql/react": "2.13.38",
+    "@quillsql/react": "2.13.45",
     "antd": "^5.22.1",
     "next": "^14.2.23",
     "react": "18.2.0",

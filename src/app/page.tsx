@@ -5,10 +5,10 @@ import { Dashboard } from "@quillsql/react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { Card, Select, DatePicker, Table, Spin } from "antd";
+import { Card, Select, DatePicker, Table, Spin, Tabs, Typography } from "antd";
 const { RangePicker } = DatePicker;
 import { useRouter } from "next/navigation";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { formatRows } from "./reports/[slug]/utils/format";
 
 dayjs.extend(utc);
@@ -19,45 +19,120 @@ dayjs.tz.setDefault("UTC");
 
 export default function Home() {
   const router = useRouter();
+  const [selectedSection, setSelectedSection] = useState<string>("Overview");
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <Dashboard
           name="trackings"
           onClickReport={(report) => router.push(`/reports/${report.id}`)}
+          DashboardSectionTabsComponent={({ sections }) => (
+            <Tabs
+              defaultActiveKey="1"
+              items={sections.map((section) => ({
+                key: section,
+                label: section,
+              }))}
+              activeKey={selectedSection}
+              onChange={(activeKey) => setSelectedSection(activeKey)}
+            />
+          )}
+          chartContainerStyle={{ height: 500, width: "100%" }}
           ChartComponent={({ report, children }: any) => (
             <Card
               title={report.name}
               onClick={() => {
                 router.push(`/reports/${report.id}`);
               }}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", width: "100%", height: 600 }}
             >
               {children}
             </Card>
           )}
           MetricComponent={({ report, isLoading, children }: any) => (
             <Card
-              title={report.name}
+              // title={report.name}
               onClick={() => {
                 router.push(`/reports/${report.id}`);
               }}
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              {isLoading ? <Spin /> : <h1>{children}</h1>}
+              {isLoading ? (
+                <Spin />
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography.Title level={1}>{children}</Typography.Title>
+                  <Typography.Title style={{ margin: 0 }} level={5}>
+                    {report.name}
+                  </Typography.Title>
+                </div>
+              )}
             </Card>
           )}
+          DashboardSectionComponent={({ section, children }: any) => {
+            if (section === selectedSection) {
+              if (section === "Carrier Performance") {
+                return <div>{children}</div>;
+              }
+              return (
+                <div
+                  style={{
+                    display: "grid",
+                    // gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                    gridTemplateColumns: "1fr 2fr",
+                    gap: "1rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateRows: "repeat(3, minmax(0, 1fr))",
+                      gap: "1rem",
+                    }}
+                  >
+                    {children.slice(0, 3)}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
+                    }}
+                  >
+                    {children.slice(3)}
+                  </div>
+                </div>
+              );
+            } else {
+              return null;
+            }
+          }}
           SelectComponent={SelectComponent}
           MultiSelectComponent={MultiSelectComponent}
           DateRangePickerComponent={DateRangePickerComponent}
           TableComponent={({ report, isLoading }) => (
-            <Card
-              title={report.name}
-              onClick={() => {
-                router.push(`/reports/${report.id}`);
-              }}
-              style={{ cursor: "pointer" }}
-            >
+            <div>
+              <Typography.Title
+                onClick={() => {
+                  router.push(`/reports/${report.id}`);
+                }}
+                level={5}
+              >
+                {report.name}
+              </Typography.Title>
               <Table
                 size="small"
                 loading={isLoading}
@@ -76,7 +151,7 @@ export default function Home() {
                   report?.columns || []
                 )}
               />
-            </Card>
+            </div>
           )}
         />
       </main>
