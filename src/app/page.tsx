@@ -51,7 +51,6 @@ export default function Home() {
           )}
           MetricComponent={({ report, isLoading, children }: any) => (
             <Card
-              // title={report.name}
               onClick={() => {
                 router.push(`/reports/${report.id}`);
               }}
@@ -91,7 +90,6 @@ export default function Home() {
                 <div
                   style={{
                     display: "grid",
-                    // gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                     gridTemplateColumns: "1fr 2fr",
                     gap: "1rem",
                   }}
